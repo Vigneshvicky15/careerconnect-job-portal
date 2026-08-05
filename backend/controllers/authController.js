@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { uploadToCloudinary } from '../middleware/uploadMiddleware.js';
+import { sendEmailJS } from '../utils/emailService.js';
+import crypto from 'crypto';
 
 // Helper to generate JWT
 const generateToken = (id) => {
@@ -21,8 +23,15 @@ export const register = async (req, res) => {
     // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
+      if (!userExists.isVerified) {
+        return res.status(400).json({ success: false, message: 'User exists but not verified. Please request a new OTP.' });
+      }
       return res.status(400).json({ success: false, message: 'User already exists with this email' });
     }
+
+    // Generate 6 digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     // Create user
     const user = await User.create({
@@ -30,18 +39,23 @@ export const register = async (req, res) => {
       email,
       password,
       role: role || 'seeker',
+      otp,
+      otpExpires,
+      isVerified: false
     });
 
     if (user) {
+      // Send Email
+      await sendEmailJS({
+        to_email: email,
+        subject: 'Verify your CareerConnect Account',
+        message: `Hello ${name},\n\nYour OTP for account verification is: ${otp}\nThis code will expire in 10 minutes.`
+      });
+
       res.status(201).json({
         success: true,
-        data: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          token: generateToken(user._id),
-        },
+        message: 'OTP sent to your email. Please verify.',
+        data: { email: user.email }
       });
     } else {
       res.status(400).json({ success: false, message: 'Invalid user data' });
@@ -65,6 +79,10 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.comparePassword(password))) {
+      if (!user.isVerified) {
+        return res.status(401).json({ success: false, message: 'Account not verified. Please verify your email via OTP.' });
+      }
+
       res.json({
         success: true,
         data: {
@@ -186,6 +204,109 @@ export const updateProfile = async (req, res) => {
     });
   } catch (error) {
     console.error('Update profile error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * @desc    Verify OTP for account activation
+ * @route   POST /api/auth/verify-otp
+ * @access  Public
+ */
+export const verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ success: false, message: 'User already verified' });
+    }
+
+    if (user.otp !== otp || user.otpExpires < Date.now()) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
+    }
+
+    user.isVerified = true;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Account verified successfully!',
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        token: generateToken(user._id),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * @desc    Forgot Password
+ * @route   POST /api/auth/forgot-password
+ * @access  Public
+ */
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const resetToken = Math.floor(100000 + Math.random() * 900000).toString(); // Using 6 digit code for simplicity in UI
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 mins
+    await user.save();
+
+    await sendEmailJS({
+      to_email: email,
+      subject: 'Password Reset Code - CareerConnect',
+      message: `Your password reset code is: ${resetToken}\nThis code will expire in 15 minutes.`
+    });
+
+    res.json({ success: true, message: 'Password reset code sent to email' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * @desc    Reset Password
+ * @route   POST /api/auth/reset-password
+ * @access  Public
+ */
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, token, newPassword } = req.body;
+    const user = await User.findOne({
+      email,
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired reset code' });
+    }
+
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ success: true, message: 'Password reset successfully. You can now login.' });
+  } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };

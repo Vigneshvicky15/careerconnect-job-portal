@@ -245,29 +245,44 @@ export const getRecommendedJobs = async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Recommended logic: search matching skills or title matching seeker title
-    let query = { isActive: true };
-    const searchTerms = [];
+    const allJobs = await Job.find({ isActive: true }).populate('recruiter', 'name companyName');
+    
+    // Normalize user skills for comparison
+    const userSkills = (user.skills || []).map(s => s.toLowerCase().trim());
+    
+    const jobsWithMatchScore = allJobs.map(job => {
+      const jobReqs = (job.requirements || []).map(r => r.toLowerCase().trim());
+      
+      let matchScore = 0;
+      let matchedSkills = [];
+      
+      if (jobReqs.length > 0 && userSkills.length > 0) {
+        // Find intersection of skills
+        matchedSkills = jobReqs.filter(req => 
+          userSkills.some(skill => req.includes(skill) || skill.includes(req))
+        );
+        matchScore = Math.round((matchedSkills.length / jobReqs.length) * 100);
+      }
+      
+      // Bonus match if the job title matches the user's title
+      if (user.title && job.title.toLowerCase().includes(user.title.toLowerCase().trim())) {
+        matchScore = Math.min(100, matchScore + 20); // +20% boost
+      }
 
-    if (user.title) {
-      searchTerms.push(user.title);
-    }
-    if (user.skills && user.skills.length > 0) {
-      searchTerms.push(...user.skills);
-    }
+      const jobObj = job.toObject();
+      jobObj.matchScore = Math.min(100, matchScore); // Cap at 100
+      jobObj.matchedSkills = matchedSkills;
+      
+      return jobObj;
+    });
 
-    if (searchTerms.length > 0) {
-      query.$or = [
-        { title: { $in: searchTerms.map((term) => new RegExp(term, 'i')) } },
-        { requirements: { $in: searchTerms.map((term) => new RegExp(term, 'i')) } },
-      ];
-    }
+    // Filter jobs with at least 1% match, sort descending, limit to 10
+    const recommendedJobs = jobsWithMatchScore
+      .filter(job => job.matchScore > 0)
+      .sort((a, b) => b.matchScore - a.matchScore)
+      .slice(0, 10);
 
-    const jobs = await Job.find(query)
-      .limit(6)
-      .sort({ createdAt: -1 });
-
-    res.json({ success: true, data: jobs });
+    res.json({ success: true, data: recommendedJobs });
   } catch (error) {
     console.error('Get recommended jobs error:', error);
     res.status(500).json({ success: false, message: error.message });

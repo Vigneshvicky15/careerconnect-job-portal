@@ -6,11 +6,13 @@ import { FileText, Bookmark, Sparkles, Clock, MapPin, DollarSign, CheckCircle } 
 import axiosInstance from '../../utils/axiosInstance';
 import JobCard from '../../components/JobCard';
 import SkeletonLoader from '../../components/SkeletonLoader';
+import ApplicationTimeline from '../../components/ApplicationTimeline';
 
 const JobSeekerDashboard = () => {
   const { user } = useContext(AuthContext);
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'applications';
+  const [expandedAppId, setExpandedAppId] = useState(null);
 
   const [applications, setApplications] = useState([]);
   const [savedJobs, setSavedJobs] = useState([]);
@@ -179,48 +181,54 @@ const JobSeekerDashboard = () => {
                     </Link>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200/50 dark:border-slate-800/40 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                          <th className="px-6 py-4">Job Title</th>
-                          <th className="px-6 py-4">Company</th>
-                          <th className="px-6 py-4">Location</th>
-                          <th className="px-6 py-4">Salary</th>
-                          <th className="px-6 py-4">Applied Date</th>
-                          <th className="px-6 py-4 text-center">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-sm">
-                        {applications.map((app) => (
-                          <tr key={app._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-850/30 transition-colors">
-                            <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
+                  <div className="grid grid-cols-1 gap-4 p-4">
+                    {applications.map((app) => (
+                      <div key={app._id} className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/60 rounded-2xl p-5 hover:border-primary-300 dark:hover:border-primary-500/50 transition-all">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                          <div>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                               {app.job ? (
                                 <Link to={`/jobs/${app.job._id}`} className="hover:text-primary-500 hover:underline">
                                   {app.job.title}
                                 </Link>
                               ) : (
-                                <span className="text-slate-400 italic font-medium">[Job Deleted]</span>
+                                <span className="text-slate-400 italic">[Job Deleted]</span>
                               )}
-                            </td>
-                            <td className="px-6 py-4 text-slate-600 dark:text-slate-350">{app.job?.companyName || '—'}</td>
-                            <td className="px-6 py-4 text-slate-500"><span className="flex items-center gap-1"><MapPin size={14} />{app.job?.location || '—'}</span></td>
-                            <td className="px-6 py-4 text-slate-500"><span className="flex items-center gap-1"><DollarSign size={14} />{app.job?.salary || '—'}</span></td>
-                            <td className="px-6 py-4 text-slate-500">
-                              <span className="flex items-center gap-1 text-xs">
-                                <Clock size={12} />
-                                {new Date(app.createdAt).toLocaleDateString()}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 text-center">
-                              <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold ${getStatusStyle(app.status)}`}>
-                                {app.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                            </h3>
+                            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 flex items-center gap-3">
+                              <span className="flex items-center gap-1"><MapPin size={14} />{app.job?.location || '—'}</span>
+                              <span className="flex items-center gap-1"><DollarSign size={14} />{app.job?.salary || '—'}</span>
+                            </p>
+                          </div>
+                          
+                          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                            <span className={`inline-flex px-3 py-1.5 rounded-xl text-xs font-bold ${getStatusStyle(app.status)}`}>
+                              {app.status}
+                            </span>
+                            <button
+                              onClick={() => setExpandedAppId(expandedAppId === app._id ? null : app._id)}
+                              className="text-sm font-semibold text-primary-500 hover:text-primary-600 bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/20 dark:hover:bg-primary-900/40 px-4 py-2 rounded-xl transition-all"
+                            >
+                              {expandedAppId === app._id ? 'Hide Timeline' : 'View Timeline'}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Expandable Timeline */}
+                        <AnimatePresence>
+                          {expandedAppId === app._id && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden border-t border-slate-200 dark:border-slate-800 mt-4 pt-4"
+                            >
+                              <ApplicationTimeline timeline={app.timeline} />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    ))}
                   </div>
                 )}
               </motion.div>

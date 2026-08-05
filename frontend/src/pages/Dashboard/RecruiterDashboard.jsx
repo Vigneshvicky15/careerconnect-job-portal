@@ -28,6 +28,7 @@ const RecruiterDashboard = () => {
   const [selectedJobForApplicants, setSelectedJobForApplicants] = useState(null);
   const [applicants, setApplicants] = useState([]);
   const [applicantsLoading, setApplicantsLoading] = useState(false);
+  const [expandedResumeAppId, setExpandedResumeAppId] = useState(null);
 
   // Post job form state
   const [jobForm, setJobForm] = useState({
@@ -448,34 +449,65 @@ const RecruiterDashboard = () => {
 
                       {/* Action controllers status update */}
                       <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-250/50 dark:border-slate-800/80">
-                        {app.resumeUrl ? (
-                          <a
-                            href={app.resumeUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs font-bold text-red-500 hover:underline"
-                          >
-                            <FileText size={14} />
-                            Download Resume PDF
-                          </a>
-                        ) : (
-                          <span className="text-xs text-slate-400 italic">No Resume Uploaded</span>
-                        )}
+                        <div className="flex items-center gap-4">
+                          {app.resumeUrl ? (
+                            <>
+                              <button
+                                onClick={() => setExpandedResumeAppId(expandedResumeAppId === app._id ? null : app._id)}
+                                className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-500 hover:text-blue-600 transition-colors"
+                              >
+                                <Eye size={14} />
+                                {expandedResumeAppId === app._id ? 'Close Preview' : 'Preview Resume'}
+                              </button>
+                              <a
+                                href={app.resumeUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-xs font-bold text-red-500 hover:text-red-600 transition-colors"
+                              >
+                                <FileText size={14} />
+                                Download PDF
+                              </a>
+                            </>
+                          ) : (
+                            <span className="text-xs text-slate-400 italic">No Resume Uploaded</span>
+                          )}
+                        </div>
 
                         <div className="flex items-center gap-2">
                           <label className="text-[11px] font-bold text-slate-400 uppercase">Status:</label>
                           <select
                             value={app.status}
                             onChange={(e) => handleUpdateStatus(app._id, e.target.value)}
-                            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs px-2.5 py-1.5 rounded-lg font-bold text-slate-700 dark:text-slate-200 outline-none"
+                            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs px-2.5 py-1.5 rounded-lg font-bold text-slate-700 dark:text-slate-200 outline-none focus:border-primary-500"
                           >
                             <option value="Pending">Pending</option>
+                            <option value="Under Review">Under Review</option>
+                            <option value="Shortlisted">Shortlisted</option>
                             <option value="Interviewing">Interviewing</option>
                             <option value="Accepted">Accepted</option>
                             <option value="Rejected">Rejected</option>
                           </select>
                         </div>
                       </div>
+
+                      {/* Resume Preview Iframe */}
+                      <AnimatePresence>
+                        {expandedResumeAppId === app._id && app.resumeUrl && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden border border-slate-200 dark:border-slate-800 rounded-xl mt-4 bg-slate-100 dark:bg-slate-950"
+                          >
+                            <iframe 
+                              src={app.resumeUrl} 
+                              className="w-full h-[600px] border-none" 
+                              title={`Resume of ${app.applicant.name}`} 
+                            />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   ))
                 )}

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { User as UserIcon, Mail, Lock, UserPlus, ArrowRight, Briefcase, UserCheck } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import axiosInstance from '../utils/axiosInstance';
 
 const RegisterPage = () => {
   const { user, register } = useContext(AuthContext);
@@ -28,11 +29,16 @@ const RegisterPage = () => {
     }
 
     setLoading(true);
-    const result = await register(name, email, password, role);
-    setLoading(false);
-
-    if (result && result.success) {
-      navigate(`/dashboard/${result.user.role}`);
+    try {
+      const res = await axiosInstance.post('/auth/register', { name, email, password, role });
+      if (res.data.success) {
+        toast.success(res.data.message);
+        navigate('/verify-otp', { state: { email } });
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Registration failed');
+    } finally {
+      setLoading(false);
     }
   };
 

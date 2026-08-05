@@ -14,9 +14,16 @@ const applicationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['Pending', 'Interviewing', 'Accepted', 'Rejected'],
+      enum: ['Pending', 'Under Review', 'Shortlisted', 'Interviewing', 'Accepted', 'Rejected'],
       default: 'Pending',
     },
+    timeline: [
+      {
+        status: { type: String, required: true },
+        date: { type: Date, default: Date.now },
+        comment: { type: String }
+      }
+    ],
     resumeUrl: {
       type: String,
       required: [true, 'Resume URL is required for application'],
@@ -30,6 +37,15 @@ const applicationSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+applicationSchema.pre('save', function(next) {
+  if (this.isNew) {
+    this.timeline.push({ status: this.status, date: Date.now() });
+  } else if (this.isModified('status')) {
+    this.timeline.push({ status: this.status, date: Date.now() });
+  }
+  next();
+});
 
 // Prevent duplicate applications by the same user to the same job
 applicationSchema.index({ job: 1, applicant: 1 }, { unique: true });

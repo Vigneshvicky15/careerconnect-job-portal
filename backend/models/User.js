@@ -29,6 +29,22 @@ const userSchema = new mongoose.Schema(
       enum: ['seeker', 'recruiter', 'admin'],
       default: 'seeker',
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    otp: {
+      type: String,
+    },
+    otpExpires: {
+      type: Date,
+    },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
+    },
     bio: {
       type: String,
       default: '',

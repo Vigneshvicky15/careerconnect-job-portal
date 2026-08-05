@@ -83,6 +83,9 @@ const LoginPage = () => {
               <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Password
               </label>
+              <Link to="/forgot-password" className="text-xs font-bold text-primary-500 hover:text-primary-600 dark:text-primary-400 hover:underline">
+                Forgot password?
+              </Link>
             </div>
             <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 px-4 py-3 rounded-2xl focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/10 transition-all">
               <Lock className="text-slate-400 shrink-0" size={18} />

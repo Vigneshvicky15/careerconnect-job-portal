@@ -4,6 +4,9 @@ import {
   login,
   getProfile,
   updateProfile,
+  verifyOTP,
+  forgotPassword,
+  resetPassword,
 } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { upload } from '../middleware/uploadMiddleware.js';
@@ -11,7 +14,10 @@ import { upload } from '../middleware/uploadMiddleware.js';
 const router = express.Router();
 
 router.post('/register', register);
+router.post('/verify-otp', verifyOTP);
 router.post('/login', login);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 
 // Update profile handles optional files profilePhoto and resume
 router.route('/profile')

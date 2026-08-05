@@ -101,6 +101,11 @@ const JobCard = ({ job, isSaved: initialIsSaved, onSaveToggle }) => {
 
         {/* Metadata Badges */}
         <div className="flex flex-wrap gap-2.5 my-4">
+          {job.matchScore !== undefined && (
+            <span className="text-xs px-2.5 py-1 rounded-lg font-bold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 border border-green-200 dark:border-green-800 flex items-center gap-1 shadow-[0_0_10px_rgba(34,197,94,0.2)]">
+              ✨ Match: {job.matchScore}%
+            </span>
+          )}
           <span className={`text-xs px-2.5 py-1 rounded-lg font-semibold tracking-wide ${getJobTypeColor(job.jobType)}`}>
             {job.jobType}
           </span>
