@@ -28,11 +28,11 @@ A full-stack MERN job portal that connects recruiters and job seekers through a 
 
 ## 🌐 Live Demo
 
-Add your deployed application URL.
+https://careerconnect-backend-blush.vercel.app/
 
 ## 💻 GitHub Repository
 
-Add your repository URL.
+https://github.com/Vigneshvicky15/careerconnect-job-portal
 
 ## 📦 Installation
 
