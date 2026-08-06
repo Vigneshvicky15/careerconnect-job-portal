@@ -184,13 +184,13 @@ export const seedDB = async () => {
     console.log('Seeding Database...');
 
     // Find or create a dummy recruiter
-    let recruiter = await User.findOne({ email: 'recruiter@dummy.com' });
+    let recruiter = await User.findOne({ email: 'hr.careers@techflow.io' });
     if (!recruiter) {
-      console.log('Creating dummy recruiter...');
+      console.log('Creating realistic recruiter profile...');
       recruiter = await User.create({
-        name: 'John Recruiter',
-        email: 'recruiter@dummy.com',
-        password: 'password123', // Doesn't matter for seeding jobs
+        name: 'Sarah Jenkins (TechFlow HR)',
+        email: 'hr.careers@techflow.io',
+        password: 'password123', // Default for seeding
         role: 'recruiter',
         isVerified: true
       });

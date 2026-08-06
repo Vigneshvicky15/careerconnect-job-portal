@@ -6,6 +6,109 @@ import axiosInstance from '../utils/axiosInstance';
 import JobCard from '../components/JobCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 
+const FilterSidebar = ({ 
+  search, setSearch, 
+  location, setLocation, 
+  jobType, setJobType, 
+  experienceLevel, setExperienceLevel, 
+  handleApplyFilters, handleClearFilters 
+}) => (
+  <div className="space-y-6 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 p-6 rounded-2xl">
+    <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-800">
+      <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
+        <SlidersHorizontal size={18} />
+        Filter Jobs
+      </h3>
+      <button
+        onClick={handleClearFilters}
+        className="text-xs text-rose-500 hover:text-rose-600 font-bold transition-colors"
+      >
+        Clear All
+      </button>
+    </div>
+
+    <form onSubmit={handleApplyFilters} className="space-y-5">
+      {/* Title / Keywords Search */}
+      <div className="space-y-1.5">
+        <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+          Keywords
+        </label>
+        <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-xl">
+          <Search size={16} className="text-slate-400" />
+          <input
+            type="text"
+            placeholder="Design, Developer..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="bg-transparent border-0 outline-none text-xs text-slate-800 dark:text-slate-200 placeholder:text-slate-400 w-full"
+          />
+        </div>
+      </div>
+
+      {/* Location Search */}
+      <div className="space-y-1.5">
+        <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+          Location
+        </label>
+        <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-xl">
+          <MapPin size={16} className="text-slate-400" />
+          <input
+            type="text"
+            placeholder="London, Remote..."
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="bg-transparent border-0 outline-none text-xs text-slate-800 dark:text-slate-200 placeholder:text-slate-400 w-full"
+          />
+        </div>
+      </div>
+
+      {/* Job Type Selector */}
+      <div className="space-y-1.5">
+        <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+          Job Type
+        </label>
+        <select
+          value={jobType}
+          onChange={(e) => setJobType(e.target.value)}
+          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-xl text-xs text-slate-800 dark:text-slate-200 outline-none"
+        >
+          <option value="">All Job Types</option>
+          <option value="Full-time">Full-time</option>
+          <option value="Part-time">Part-time</option>
+          <option value="Contract">Contract</option>
+          <option value="Internship">Internship</option>
+        </select>
+      </div>
+
+      {/* Experience Level Selector */}
+      <div className="space-y-1.5">
+        <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+          Experience Level
+        </label>
+        <select
+          value={experienceLevel}
+          onChange={(e) => setExperienceLevel(e.target.value)}
+          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-xl text-xs text-slate-800 dark:text-slate-200 outline-none"
+        >
+          <option value="">All Experience Levels</option>
+          <option value="Entry">Entry Level</option>
+          <option value="Mid">Mid Level</option>
+          <option value="Senior">Senior Level</option>
+          <option value="Lead">Lead / Executive</option>
+        </select>
+      </div>
+
+      {/* Apply Filters Button */}
+      <button
+        type="submit"
+        className="w-full py-2.5 text-xs font-bold text-white bg-primary-500 hover:bg-primary-600 rounded-xl transition-colors shadow-md shadow-primary-500/10"
+      >
+        Apply Filters
+      </button>
+    </form>
+  </div>
+);
+
 const JobsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [jobs, setJobs] = useState([]);
@@ -95,102 +198,7 @@ const JobsPage = () => {
     }
   };
 
-  const FilterSidebar = () => (
-    <div className="space-y-6 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 p-6 rounded-2xl">
-      <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-800">
-        <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
-          <SlidersHorizontal size={18} />
-          Filter Jobs
-        </h3>
-        <button
-          onClick={handleClearFilters}
-          className="text-xs text-rose-500 hover:text-rose-600 font-bold transition-colors"
-        >
-          Clear All
-        </button>
-      </div>
 
-      <form onSubmit={handleApplyFilters} className="space-y-5">
-        {/* Title / Keywords Search */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-            Keywords
-          </label>
-          <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-xl">
-            <Search size={16} className="text-slate-400" />
-            <input
-              type="text"
-              placeholder="Design, Developer..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="bg-transparent border-0 outline-none text-xs text-slate-800 dark:text-slate-200 placeholder:text-slate-400 w-full"
-            />
-          </div>
-        </div>
-
-        {/* Location Search */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-            Location
-          </label>
-          <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-xl">
-            <MapPin size={16} className="text-slate-400" />
-            <input
-              type="text"
-              placeholder="London, Remote..."
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="bg-transparent border-0 outline-none text-xs text-slate-800 dark:text-slate-200 placeholder:text-slate-400 w-full"
-            />
-          </div>
-        </div>
-
-        {/* Job Type Selector */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-            Job Type
-          </label>
-          <select
-            value={jobType}
-            onChange={(e) => setJobType(e.target.value)}
-            className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-xl text-xs text-slate-800 dark:text-slate-200 outline-none"
-          >
-            <option value="">All Job Types</option>
-            <option value="Full-time">Full-time</option>
-            <option value="Part-time">Part-time</option>
-            <option value="Contract">Contract</option>
-            <option value="Internship">Internship</option>
-          </select>
-        </div>
-
-        {/* Experience Level Selector */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-            Experience Level
-          </label>
-          <select
-            value={experienceLevel}
-            onChange={(e) => setExperienceLevel(e.target.value)}
-            className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-xl text-xs text-slate-800 dark:text-slate-200 outline-none"
-          >
-            <option value="">All Experience Levels</option>
-            <option value="Entry">Entry Level</option>
-            <option value="Mid">Mid Level</option>
-            <option value="Senior">Senior Level</option>
-            <option value="Lead">Lead / Executive</option>
-          </select>
-        </div>
-
-        {/* Apply Filters Button */}
-        <button
-          type="submit"
-          className="w-full py-2.5 text-xs font-bold text-white bg-primary-500 hover:bg-primary-600 rounded-xl transition-colors shadow-md shadow-primary-500/10"
-        >
-          Apply Filters
-        </button>
-      </form>
-    </div>
-  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -214,7 +222,13 @@ const JobsPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Desktop Sidebar Filters */}
         <div className="hidden lg:block lg:col-span-1">
-          <FilterSidebar />
+          <FilterSidebar 
+            search={search} setSearch={setSearch}
+            location={location} setLocation={setLocation}
+            jobType={jobType} setJobType={setJobType}
+            experienceLevel={experienceLevel} setExperienceLevel={setExperienceLevel}
+            handleApplyFilters={handleApplyFilters} handleClearFilters={handleClearFilters}
+          />
         </div>
 
         {/* Jobs Grid */}
@@ -284,7 +298,13 @@ const JobsPage = () => {
                   <X size={20} />
                 </button>
               </div>
-              <FilterSidebar />
+              <FilterSidebar 
+                search={search} setSearch={setSearch}
+                location={location} setLocation={setLocation}
+                jobType={jobType} setJobType={setJobType}
+                experienceLevel={experienceLevel} setExperienceLevel={setExperienceLevel}
+                handleApplyFilters={handleApplyFilters} handleClearFilters={handleClearFilters}
+              />
             </div>
           </div>
         </div>

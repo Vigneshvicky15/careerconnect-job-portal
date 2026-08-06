@@ -137,17 +137,17 @@ const RecruiterDashboard = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Recruiter Dashboard</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Recruiter Workspace</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Manage your corporate postings, verify credentials, and update applicant pipelines.
           </p>
         </div>
         <button
           onClick={() => setShowPostModal(true)}
-          className="flex items-center justify-center gap-1.5 px-5 py-3 text-sm font-bold text-white bg-primary-500 hover:bg-primary-600 rounded-2xl transition-all shadow-md shadow-primary-500/20 active:scale-95 w-fit"
+          className="flex items-center justify-center gap-2 px-6 py-4 text-base font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-2xl transition-all shadow-lg shadow-primary-500/30 active:scale-95 w-fit"
         >
-          <PlusSquare size={18} />
-          Post New Job
+          <PlusSquare size={20} />
+          Post a New Job
         </button>
       </div>
 

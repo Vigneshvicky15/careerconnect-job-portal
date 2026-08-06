@@ -80,10 +80,10 @@ const JobSeekerDashboard = () => {
       {/* Welcome header */}
       <div>
         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          Hello, {user?.name || 'Candidate'}
+          Candidate Portal
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Review your active application statuses and discover tailored roles below.
+          Welcome back, {user?.name || 'Candidate'}. Review your active application statuses and discover tailored roles below.
         </p>
       </div>
 
