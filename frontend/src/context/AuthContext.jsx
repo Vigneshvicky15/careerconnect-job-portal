@@ -56,12 +56,8 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const res = await axiosInstance.post('/auth/register', { name, email, password, role });
       if (res.data.success) {
-        const userData = res.data.data;
-        localStorage.setItem('careerConnect_token', userData.token);
-        localStorage.setItem('careerConnect_user', JSON.stringify(userData));
-        setUser(userData);
-        toast.success('Registered successfully!');
-        return { success: true, user: userData };
+        toast.success('OTP sent to your email! Please verify.');
+        return { success: true, data: res.data.data };
       }
     } catch (error) {
       const msg = error.response?.data?.message || 'Registration failed';
