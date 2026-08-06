@@ -2,208 +2,138 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Job from './models/Job.js';
 import User from './models/User.js';
+import Application from './models/Application.js';
 
 dotenv.config();
 
-const dummyJobs = [
-  {
-    title: 'Senior Frontend Developer',
-    description: 'We are looking for an experienced Frontend Developer proficient in React.js and modern CSS frameworks. You will be responsible for architecting and building complex user interfaces for our flagship SaaS product.',
-    requirements: ['5+ years React experience', 'Tailwind CSS', 'Redux / Context API', 'TypeScript'],
-    salary: '$120,000 - $150,000',
-    location: 'Remote (US)',
-    jobType: 'Full-time',
-    experienceLevel: 'Senior',
-    companyName: 'TechFlow Solutions',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=TechFlow&background=0D8ABC&color=fff',
-  },
-  {
-    title: 'Backend Engineer (Node.js)',
-    description: 'Join our backend team to build scalable microservices using Node.js, Express, and MongoDB. You will optimize database queries and ensure high performance of our APIs.',
-    requirements: ['Node.js & Express', 'MongoDB / PostgreSQL', 'Docker', 'AWS'],
-    salary: '$110,000 - $140,000',
-    location: 'New York, NY',
-    jobType: 'Full-time',
-    experienceLevel: 'Mid-Level',
-    companyName: 'DataSphere',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=DataSphere&background=FF5733&color=fff',
-  },
-  {
-    title: 'UI/UX Designer',
-    description: 'We need a creative UI/UX designer to craft beautiful and intuitive user experiences. You will collaborate closely with product managers and engineers.',
-    requirements: ['Figma', 'Prototyping', 'User Research', 'Adobe Creative Suite'],
-    salary: '$90,000 - $120,000',
-    location: 'San Francisco, CA',
-    jobType: 'Full-time',
-    experienceLevel: 'Mid-Level',
-    companyName: 'CreativeEdge',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=CreativeEdge&background=8E44AD&color=fff',
-  },
-  {
-    title: 'Product Manager',
-    description: 'Lead the strategy and execution of our mobile application. You will gather requirements, write PRDs, and manage the sprint cycles.',
-    requirements: ['Agile Methodology', 'Jira / Linear', 'Data Analytics', 'Cross-functional leadership'],
-    salary: '$130,000 - $160,000',
-    location: 'Remote (Global)',
-    jobType: 'Full-time',
-    experienceLevel: 'Senior',
-    companyName: 'InnovateX',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=InnovateX&background=27AE60&color=fff',
-  },
-  {
-    title: 'DevOps Engineer',
-    description: 'Manage our cloud infrastructure and CI/CD pipelines. Ensure 99.9% uptime for our critical services and automate deployment processes.',
-    requirements: ['Kubernetes', 'Terraform', 'AWS / GCP', 'Jenkins / GitHub Actions'],
-    salary: '$140,000 - $170,000',
-    location: 'Austin, TX',
-    jobType: 'Full-time',
-    experienceLevel: 'Senior',
-    companyName: 'CloudNetics',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=CloudNetics&background=2980B9&color=fff',
-  },
-  {
-    title: 'Marketing Specialist',
-    description: 'Drive our social media campaigns and SEO strategy. You will be creating engaging content and analyzing marketing metrics to boost conversions.',
-    requirements: ['SEO / SEM', 'Google Analytics', 'Content Creation', 'Social Media Management'],
-    salary: '$60,000 - $80,000',
-    location: 'London, UK (Hybrid)',
-    jobType: 'Full-time',
-    experienceLevel: 'Entry-Level',
-    companyName: 'GrowthHackers',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=GrowthHackers&background=E67E22&color=fff',
-  },
-  {
-    title: 'Full Stack MERN Developer',
-    description: 'Looking for a versatile Full Stack Developer who can handle everything from MongoDB database design to React frontend implementation.',
-    requirements: ['MongoDB', 'Express', 'React', 'Node.js'],
-    salary: '$95,000 - $125,000',
-    location: 'Remote',
-    jobType: 'Full-time',
-    experienceLevel: 'Mid-Level',
-    companyName: 'StartupHub',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=StartupHub&background=16A085&color=fff',
-  },
-  {
-    title: 'Data Scientist',
-    description: 'Analyze complex datasets to extract actionable insights. Build predictive models using Python and machine learning frameworks.',
-    requirements: ['Python', 'TensorFlow / PyTorch', 'SQL', 'Data Visualization (Tableau)'],
-    salary: '$130,000 - $165,000',
-    location: 'Boston, MA',
-    jobType: 'Full-time',
-    experienceLevel: 'Senior',
-    companyName: 'Analytica',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=Analytica&background=C0392B&color=fff',
-  },
-  {
-    title: 'Mobile App Developer (Flutter)',
-    description: 'Build cross-platform mobile applications for iOS and Android using Flutter. Work with RESTful APIs to integrate backend services.',
-    requirements: ['Flutter', 'Dart', 'State Management', 'REST APIs'],
-    salary: '$100,000 - $130,000',
-    location: 'Remote (Europe)',
-    jobType: 'Contract',
-    experienceLevel: 'Mid-Level',
-    companyName: 'AppWorks',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=AppWorks&background=34495E&color=fff',
-  },
-  {
-    title: 'Technical Writer',
-    description: 'Create clear and concise documentation for our developer API. Write tutorials, guides, and reference materials.',
-    requirements: ['Excellent English', 'Markdown', 'API Documentation', 'Basic Coding Knowledge'],
-    salary: '$70,000 - $90,000',
-    location: 'Remote',
-    jobType: 'Full-time',
-    experienceLevel: 'Mid-Level',
-    companyName: 'DocuTech',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=DocuTech&background=F39C12&color=fff',
-  },
-  {
-    title: 'Cybersecurity Analyst',
-    description: 'Monitor our networks for security breaches and investigate violations. Implement security measures and conduct penetration testing.',
-    requirements: ['Network Security', 'Penetration Testing', 'SIEM Tools', 'Incident Response'],
-    salary: '$115,000 - $145,000',
-    location: 'Washington, DC',
-    jobType: 'Full-time',
-    experienceLevel: 'Senior',
-    companyName: 'SecureSystems',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=SecureSystems&background=2C3E50&color=fff',
-  },
-  {
-    title: 'Graphic Designer',
-    description: 'Create visual concepts to communicate ideas that inspire, inform, and captivate consumers. Design logos, brochures, and web graphics.',
-    requirements: ['Illustrator', 'Photoshop', 'Typography', 'Creativity'],
-    salary: '$55,000 - $75,000',
-    location: 'Chicago, IL (Hybrid)',
-    jobType: 'Full-time',
-    experienceLevel: 'Entry-Level',
-    companyName: 'PixelPerfect',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=PixelPerfect&background=D35400&color=fff',
-  },
-  {
-    title: 'Sales Representative',
-    description: 'Identify leads, pitch our software solutions to enterprise clients, and close deals. Excellent communication skills required.',
-    requirements: ['B2B Sales', 'CRM (Salesforce)', 'Negotiation', 'Cold Calling'],
-    salary: '$70,000 + Commission',
-    location: 'Dallas, TX',
-    jobType: 'Full-time',
-    experienceLevel: 'Mid-Level',
-    companyName: 'EnterpriseSolutions',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=Enterprise&background=7F8C8D&color=fff',
-  },
-  {
-    title: 'Quality Assurance Tester',
-    description: 'Ensure our web applications are bug-free before release. Write automated test scripts and perform manual testing.',
-    requirements: ['Selenium', 'Cypress', 'Manual Testing', 'Bug Tracking (Jira)'],
-    salary: '$80,000 - $100,000',
-    location: 'Remote',
-    jobType: 'Full-time',
-    experienceLevel: 'Mid-Level',
-    companyName: 'QualityFirst',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=QualityFirst&background=1ABC9C&color=fff',
-  },
-  {
-    title: 'Blockchain Developer',
-    description: 'Develop and deploy smart contracts on the Ethereum network. Work on cutting-edge Web3 and DeFi protocols.',
-    requirements: ['Solidity', 'Web3.js / Ethers.js', 'Smart Contracts', 'Cryptography'],
-    salary: '$150,000 - $200,000',
-    location: 'Remote (Global)',
-    jobType: 'Contract',
-    experienceLevel: 'Senior',
-    companyName: 'CryptoInnovate',
-    companyLogoUrl: 'https://ui-avatars.com/api/?name=Crypto&background=F1C40F&color=fff',
-  }
+const recruitersData = [
+  { name: 'TCS Recruitment', email: 'hiring@tcs.com', company: 'Tata Consultancy Services', logo: 'https://ui-avatars.com/api/?name=TCS&background=1E3A8A&color=fff' },
+  { name: 'Amazon Careers', email: 'recruitment@amazon.in', company: 'Amazon', logo: 'https://ui-avatars.com/api/?name=Amazon&background=F59E0B&color=fff' },
+  { name: 'TechFlow HR', email: 'hr.careers@techflow.io', company: 'TechFlow', logo: 'https://ui-avatars.com/api/?name=TechFlow&background=10B981&color=fff' }
 ];
+
+const seekersData = [
+  { name: 'Rahul Sharma', email: 'rahul.dev@gmail.com', skills: ['React', 'Node.js', 'MongoDB', 'JavaScript'], title: 'Full Stack Developer', bio: 'Passionate developer with 3 years of experience building scalable web applications.' },
+  { name: 'Priya Patel', email: 'priya.design@gmail.com', skills: ['Figma', 'UI/UX', 'Adobe XD', 'CSS'], title: 'UI/UX Designer', bio: 'Creative designer focused on crafting user-centric digital experiences.' },
+  { name: 'Vignesh Kumar', email: 'vignesh.marketing@gmail.com', skills: ['SEO', 'Digital Marketing', 'Google Ads', 'Content Strategy'], title: 'Marketing Specialist', bio: 'Data-driven marketer helping brands grow their online presence.' }
+];
+
+const generateJobs = (recruiters) => {
+  const jobTemplates = [
+    { title: 'Frontend Developer (React)', jobType: 'Full-time', level: 'Mid', salary: '₹8,00,000 - ₹12,00,000', reqs: ['React', 'JavaScript', 'Tailwind', 'Redux'], desc: 'Build modern user interfaces with React and Tailwind.' },
+    { title: 'Backend Software Engineer', jobType: 'Full-time', level: 'Senior', salary: '₹15,00,000 - ₹25,00,000', reqs: ['Node.js', 'Express', 'MongoDB', 'AWS'], desc: 'Design and optimize scalable backend microservices.' },
+    { title: 'UI/UX Product Designer', jobType: 'Full-time', level: 'Mid', salary: '₹6,00,000 - ₹10,00,000', reqs: ['Figma', 'Prototyping', 'User Research'], desc: 'Create beautiful user flows and high-fidelity mockups.' },
+    { title: 'Digital Marketing Lead', jobType: 'Full-time', level: 'Lead', salary: '₹12,00,000 - ₹18,00,000', reqs: ['SEO', 'SEM', 'Google Analytics'], desc: 'Lead our digital marketing campaigns and grow organic traffic.' },
+    { title: 'Data Scientist', jobType: 'Full-time', level: 'Mid', salary: '₹10,00,000 - ₹16,00,000', reqs: ['Python', 'Machine Learning', 'SQL', 'TensorFlow'], desc: 'Extract insights from massive datasets to drive business decisions.' },
+    { title: 'DevOps Engineer', jobType: 'Contract', level: 'Senior', salary: '₹18,00,000 - ₹24,00,000', reqs: ['Kubernetes', 'Docker', 'CI/CD', 'Linux'], desc: 'Maintain our cloud infrastructure and automate deployment pipelines.' },
+    { title: 'React Native Developer', jobType: 'Full-time', level: 'Mid', salary: '₹9,00,000 - ₹14,00,000', reqs: ['React Native', 'Mobile Dev', 'API Integration'], desc: 'Develop cross-platform mobile apps for iOS and Android.' },
+    { title: 'Cybersecurity Analyst', jobType: 'Full-time', level: 'Entry', salary: '₹4,00,000 - ₹7,00,000', reqs: ['Network Security', 'Ethical Hacking', 'Linux'], desc: 'Monitor systems for security breaches and conduct vulnerability assessments.' },
+    { title: 'Product Manager', jobType: 'Full-time', level: 'Senior', salary: '₹20,00,000 - ₹30,00,000', reqs: ['Agile', 'Product Strategy', 'Jira', 'Leadership'], desc: 'Lead product development from ideation to launch.' },
+    { title: 'Content Writer', jobType: 'Part-time', level: 'Entry', salary: '₹2,00,000 - ₹4,00,000', reqs: ['Copywriting', 'SEO', 'Grammar'], desc: 'Write engaging blog posts, articles, and website copy.' }
+  ];
+
+  const locations = ['Chennai, TN', 'Bangalore, KA', 'Remote', 'Pune, MH', 'Hyderabad, TS'];
+  const allJobs = [];
+
+  // Generate 50 jobs (5 variations of the 10 templates)
+  for (let i = 0; i < 5; i++) {
+    for (let template of jobTemplates) {
+      const recruiter = recruiters[Math.floor(Math.random() * recruiters.length)];
+      const location = locations[Math.floor(Math.random() * locations.length)];
+      allJobs.push({
+        title: template.title,
+        description: template.desc + `\n\nJoin ${recruiter.name} and make an impact. We offer great benefits, flexible hours, and a vibrant work culture.`,
+        requirements: template.reqs,
+        salary: template.salary,
+        location: location,
+        jobType: template.jobType,
+        experienceLevel: template.level,
+        companyName: recruiter.company,
+        companyLogoUrl: recruiter.logo,
+        recruiter: recruiter._id,
+      });
+    }
+  }
+  return allJobs;
+};
 
 export const seedDB = async () => {
   try {
     const jobCount = await Job.countDocuments();
-    if (jobCount > 0) {
-      console.log('Database already seeded with jobs. Skipping seed.');
+    if (jobCount >= 50) {
+      console.log('Database already seeded with enough jobs. Skipping seed.');
       return;
     }
 
-    console.log('Seeding Database...');
+    console.log('Starting Massive DB Seeding...');
 
-    // Find or create a dummy recruiter
-    let recruiter = await User.findOne({ email: 'hr.careers@techflow.io' });
-    if (!recruiter) {
-      console.log('Creating realistic recruiter profile...');
-      recruiter = await User.create({
-        name: 'Sarah Jenkins (TechFlow HR)',
-        email: 'hr.careers@techflow.io',
-        password: 'password123', // Default for seeding
+    // 1. Clear existing dummy data if any
+    await Application.deleteMany({});
+    await Job.deleteMany({});
+    await User.deleteMany({ email: { $in: [...recruitersData.map(r => r.email), ...seekersData.map(s => s.email)] } });
+
+    // 2. Create Recruiters
+    const createdRecruiters = [];
+    for (let rData of recruitersData) {
+      let rec = await User.create({
+        name: rData.name,
+        email: rData.email,
+        password: 'password123',
         role: 'recruiter',
         isVerified: true
       });
+      // Attach company details temporarily for job generation
+      rec.company = rData.company;
+      rec.logo = rData.logo;
+      createdRecruiters.push(rec);
     }
+    console.log('Created 3 Authentic Recruiters.');
 
-    console.log('Inserting new jobs...');
-    const jobsWithRecruiter = dummyJobs.map(job => ({
-      ...job,
-      recruiter: recruiter._id,
-    }));
+    // 3. Create Seekers
+    const createdSeekers = [];
+    for (let sData of seekersData) {
+      const seeker = await User.create({
+        name: sData.name,
+        email: sData.email,
+        password: 'password123',
+        role: 'seeker',
+        isVerified: true,
+        skills: sData.skills,
+        title: sData.title,
+        bio: sData.bio,
+        resumeUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', // Dummy PDF
+        resumeName: `${sData.name.replace(' ', '_')}_Resume.pdf`
+      });
+      createdSeekers.push(seeker);
+    }
+    console.log('Created 3 Authentic Candidates.');
 
-    await Job.insertMany(jobsWithRecruiter);
-    console.log('Successfully seeded 15 jobs!');
+    // 4. Create 50 Jobs
+    const jobsToInsert = generateJobs(createdRecruiters);
+    const insertedJobs = await Job.insertMany(jobsToInsert);
+    console.log(`Created ${insertedJobs.length} Jobs across multiple locations and categories.`);
+
+    // 5. Create Applications (Manage System Demonstration)
+    console.log('Simulating incoming applications for Recruiters...');
+    const applicationStatuses = ['Pending', 'Under Review', 'Shortlisted', 'Interviewing', 'Rejected'];
+    
+    // Have each seeker apply to 5 random jobs
+    for (let seeker of createdSeekers) {
+      // Shuffle jobs and pick 5
+      const randomJobs = [...insertedJobs].sort(() => 0.5 - Math.random()).slice(0, 5);
+      for (let job of randomJobs) {
+        await Application.create({
+          job: job._id,
+          applicant: seeker._id,
+          status: applicationStatuses[Math.floor(Math.random() * applicationStatuses.length)],
+          resumeUrl: seeker.resumeUrl,
+          resumeName: seeker.resumeName
+        });
+      }
+    }
+    console.log('Successfully simulated 15 applications!');
+    console.log('Seeding Complete! Recruiter Dashboards are now populated with candidates.');
+    
   } catch (err) {
     console.error('Error seeding DB:', err);
   }
