@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { useAuth } from '../context/AuthContext';
+import { AuthContext } from '../context/AuthContext';
 import axiosInstance from '../utils/axiosInstance';
 
 const OTPVerificationPage = () => {
@@ -9,7 +9,7 @@ const OTPVerificationPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { setUser } = useContext(AuthContext);
   const email = location.state?.email;
 
   if (!email) {
@@ -26,8 +26,12 @@ const OTPVerificationPage = () => {
       const res = await axiosInstance.post('/auth/verify-otp', { email, otp });
       if (res.data.success) {
         toast.success(res.data.message);
-        login(res.data.data);
-        navigate(`/dashboard/${res.data.data.role}`);
+        // Correctly set user session after verification
+        const userData = res.data.data;
+        localStorage.setItem('careerConnect_token', userData.token);
+        localStorage.setItem('careerConnect_user', JSON.stringify(userData));
+        setUser(userData);
+        navigate(`/dashboard/${userData.role}`);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Verification failed');
