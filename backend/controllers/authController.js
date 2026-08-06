@@ -24,7 +24,24 @@ export const register = async (req, res) => {
     const userExists = await User.findOne({ email });
     if (userExists) {
       if (!userExists.isVerified) {
-        return res.status(400).json({ success: false, message: 'User exists but not verified. Please request a new OTP.' });
+        // Resend OTP instead of throwing an error
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        userExists.otp = otp;
+        userExists.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+        userExists.password = password; // Update password just in case they changed it
+        await userExists.save();
+
+        await sendEmailJS({
+          to_email: email,
+          subject: 'Verify your CareerConnect Account',
+          message: `Hello ${userExists.name},\n\nYour new OTP for account verification is: ${otp}\nThis code will expire in 10 minutes.`
+        });
+
+        return res.status(201).json({ 
+          success: true, 
+          message: 'OTP resent to your email. Please verify.',
+          data: { email }
+        });
       }
       return res.status(400).json({ success: false, message: 'User already exists with this email' });
     }
