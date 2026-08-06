@@ -55,11 +55,23 @@ function App() {
                 <Route path="/verify-otp" element={<OTPVerificationPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
-                <Route path="/jobs" element={<JobsPage />} />
-                <Route path="/jobs/:id" element={<JobDetailsPage />} />
-
                 {/* Common Protected Route mappings */}
                 <Route
+                  path="/jobs"
+                  element={
+                    <ProtectedRoute>
+                      <JobsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/jobs/:id"
+                  element={
+                    <ProtectedRoute>
+                      <JobDetailsPage />
+                    </ProtectedRoute>
+                  }
+                />                <Route
                   path="/profile"
                   element={
                     <ProtectedRoute>

@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
 import connectDB from './config/db.js';
+import { seedDB } from './seed.js';
 
 // Route imports
 import authRoutes from './routes/authRoutes.js';
@@ -14,7 +15,10 @@ import adminRoutes from './routes/adminRoutes.js';
 dotenv.config();
 
 // Connect to MongoDB
-connectDB();
+connectDB().then(() => {
+  // Automatically seed DB with mock jobs if it's empty
+  seedDB();
+});
 
 const app = express();
 

@@ -49,12 +49,12 @@ const Navbar = () => {
 
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/jobs" className="text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 font-medium transition-colors">
-              Browse Jobs
-            </Link>
-
             {user && (
               <>
+                <Link to="/jobs" className="text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 font-medium transition-colors">
+                  Browse Jobs
+                </Link>
+
                 <Link to={getDashboardLink()} className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 font-medium transition-colors">
                   <LayoutDashboard size={16} />
                   Dashboard
@@ -145,16 +145,16 @@ const Navbar = () => {
       {isOpen && (
         <div className="md:hidden glassmorphism border-t border-slate-200/50 dark:border-slate-800/40">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link
-              to="/jobs"
-              onClick={() => setIsOpen(false)}
-              className="block px-3 py-2 rounded-xl text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              Browse Jobs
-            </Link>
-
             {user && (
               <>
+                <Link
+                  to="/jobs"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-3 py-2 rounded-xl text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  Browse Jobs
+                </Link>
+
                 <Link
                   to={getDashboardLink()}
                   onClick={() => setIsOpen(false)}
