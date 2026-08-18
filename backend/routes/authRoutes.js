@@ -31,4 +31,11 @@ router.route('/profile')
     updateProfile
   );
 
+// TEMP DEBUG ROUTE - check what users exist in Render DB
+import User from '../models/User.js';
+router.get('/debug-users', async (req, res) => {
+  const users = await User.find({}).select('email role isVerified').lean();
+  res.json({ total: users.length, users });
+});
+
 export default router;
