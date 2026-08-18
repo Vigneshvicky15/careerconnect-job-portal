@@ -38,4 +38,16 @@ router.get('/debug-users', async (req, res) => {
   res.json({ total: users.length, users });
 });
 
+// TEMP CLEANUP ROUTE - delete specific old test accounts
+router.get('/cleanup-old-users', async (req, res) => {
+  const emailsToDelete = [
+    'vigneshvel515@gmail.com',
+    'vigneshvetrivel15@gmail.com',
+    'recruiter@dummy.com',
+    'careerconnect1522@gmail.com',
+  ];
+  const result = await User.deleteMany({ email: { $in: emailsToDelete } });
+  res.json({ success: true, message: `Deleted ${result.deletedCount} old accounts`, deletedEmails: emailsToDelete });
+});
+
 export default router;
